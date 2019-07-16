@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.UserDao">
+
+	<!-- 以下方法将作为学习使用的通用的实现方法 -->
+	<!-- 新增一条记录 -->
+	<insert id="save" parameterType="UserBean" keyProperty="id"
+		useGeneratedKeys="true">
+		insert into
+		t_user(username,password,age)
+		values
+		(#{userName},#{password},#{age})
+	</insert>
+
+	<!-- 删除某条记录 -->
+	<delete id="delete" parameterType="int">
+		delete from
+		t_user where id = #{id}
+	</delete>
+
+	<!-- 删除全部记录 -->
+	<delete id="deleteAll">
+		delete from
+		longan_jersey_permission_user
+	</delete>
+
+	<!-- 删除某些ID的记录 -->
+	<delete id="deleteByIDS" parameterType="java.util.List">
+		delete from
+		longan_jersey_permission_user
+		where id in
+		<foreach collection="list" index="index" item="item" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+
+	<!-- 查询某条记录根据id -->
+	<select id="find" parameterType="int" resultType="UserBean">
+		select * from
+		longan_jersey_permission_user where id = #{id}
+	</select>
+
+	<select id="findAll" resultType="UserBean" parameterType="Map">
+		SELECT * FROM longan_jersey_permission_user
+		<include refid="paramsSQL" />
+	</select>
+
+	<!-- 分页查询 -->
+	<select id="findPaginated" resultType="UserBean"
+		parameterType="Map">
+		select * from longan_jersey_permission_user
+		<include refid="paramsSQL" />
+		limit #{offset}, #{limit}
+	</select>
+
+	<select id="getTotalOfItems" parameterType="Map" resultType="int">
+		select count(*) from longan_jersey_permission_user
+		<include refid="paramsSQL" />
+	</select>
+
+
+	<!-- 修改个某条信息 -->
+	<update id="update" parameterType="UserBean">
+		update longan_jersey_permission_user
+		<set>
+			<if test="username != null and username != ''">username = #{username},</if>
+			<if test="password != null and password != ''">password = #{password},</if>
+			<if test="updateTime != null">updateTime = #{updateTime},</if>
+		</set>
+		where id = #{id}
+	</update>
+
+
+	<!-- 通用的设置条件的查询SQL语句 -->
+	<sql id="paramsSQL">
+		<where>
+			<if test=" username != null and username != '' ">
+				and username like concat(concat('%', #{username,
+				jdbcType=VARCHAR}),'%')
+			</if>
+			<if test=" password != null and password != '' ">
+				and password like concat(concat('%', #{password,
+				jdbcType=VARCHAR}),'%')
+			</if>
+		</where>
+	</sql>
+	
+	<!-- 根据用户名查找用户 -->
+	<select id="findByUsername" parameterType="String" resultType="UserBean">
+		select * 
+		from
+		longan_jersey_permission_user
+		where 
+		username=#{username}
+	</select>
+	
+</mapper> 
